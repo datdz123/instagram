@@ -1,0 +1,121 @@
+/**
+ * Custom styles to immediately follow Tailwind’s `base` layer
+ *
+ * “Add things like base typography styles [or] opinionated global resets.”
+ *
+ * — from https://tailwindcss.com/docs/plugins#adding-base-styles
+ */
+
+/**
+ * This uses the background and foreground colors declared in the
+ * `theme.json` file and is applied both to the frontend and in the block
+ * editor.
+*/
+body {
+	@apply bg-background text-foreground font-sans;
+}
+
+:root {
+	--primary-color: #0011af;
+	--secondary-color: #060b3d;
+}
+@layer components {
+	@screen lg {
+		.header__menu {
+			> ul {
+				> li {
+					&:hover {
+						> a {
+							@apply text-primary after:scale-100;
+						}
+					}
+					> a {
+						@apply transition-all duration-500 relative text-gray inline-block  after:absolute after:w-full after:h-[1px] after:bottom-0 after:left-0 after:scale-0 after:transition-all after:duration-500 after:bg-primary font-medium uppercase;
+					}
+
+					&.menu-item-has-children {
+						@apply relative after:absolute after:w-full after:h-6 after:-bottom-5 after:left-0 after:bg-transparent;
+						> a {
+							@apply pr-5 bg-no-repeat bg-right;
+							background-image: url("data:image/svg+xml,%3Csvg width='14' height='8' viewBox='0 0 14 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12.625 1.1875L7 6.8125L1.375 1.1875' stroke='%23515256' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E%0A");
+						}
+						&:hover {
+							> a {
+								background-image: url("data:image/svg+xml,%3Csvg width='14' height='8' viewBox='0 0 14 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12.625 1.1875L7 6.8125L1.375 1.1875' stroke='%230011af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E%0A");
+							}
+						}
+						.sub-menu {
+							@apply absolute left-0 w-52 text-gray  rounded-md overflow-hidden shadow-2xl mt-3 opacity-0 invisible transition-all duration-500 -z-10 origin-top bg-white pointer-events-none -translate-y-2 scale-y-50;
+							li {
+								a {
+									@apply block px-4 py-2 transition-all duration-500 hover:bg-primary hover:text-white;
+									&:hover {
+										color: #ffffff;
+										background-color: var(--primary-color);
+									}
+									@media (max-width: 1199px) {
+										padding: 5px 1.5rem;
+									}
+								}
+							}
+							&::after {
+								left: 50%;
+								transform: translateX(-50%) rotate(45deg);
+							}
+						}
+						&:hover {
+							> .sub-menu {
+								@apply translate-y-0 scale-y-100 visible opacity-100 z-10 pointer-events-auto;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+@media only screen and (max-width: 1024px) {
+	.header__menu {
+		> ul {
+			@apply list-none overflow-y-auto max-h-full;
+
+			li {
+				@apply relative border-b border-slate-300;
+
+				a {
+					@apply font-medium text-sm block p-3 text-black;
+				}
+				.li-plus {
+					@apply absolute top-0 right-0 w-11 h-11 leading-[44px] text-center text-primary transition-all duration-500 border-l border-slate-400 flex items-center justify-center after:absolute before:absolute after:w-3 before:w-3 after:h-[2px] before:h-[2px]
+				after:bg-primary before:bg-primary after:block before:block after:top-1/2 before:top-1/2 after:left-1/2 before:left-1/2 after:transition-all before:transition-all after:-translate-x-1/2 after:-translate-y-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:rotate-90;
+				}
+				.clicked {
+					@apply before:-translate-x-1/2 before:-translate-y-1/2 before:rotate-0 after:-translate-x-1/2 after:-translate-y-1/2 after:rotate-0 after:opacity-0;
+				}
+				& > ul {
+					@apply mt-0 hidden;
+					li {
+						@apply border-none border-t border-slate-300;
+
+						a {
+							@apply pl-6 font-normal;
+						}
+					}
+				}
+			}
+			.current-menu-item {
+				.li-plus {
+					@apply after:bg-white  before:bg-white;
+				}
+				a {
+					@apply text-white bg-primary;
+				}
+				ul {
+					a {
+						@apply bg-white text-black;
+					}
+				}
+			}
+		}
+	}
+}
