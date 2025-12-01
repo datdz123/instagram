@@ -132,3 +132,10 @@ pre.wp-block-code {
 .wp-block-image.is-resized > figcaption {
     text-align: center;
 }
+
+.custom-logo-link img{
+	width: 134px;
+	height: 36px;
+	object-fit: contain;
+    margin: auto;
+  }
