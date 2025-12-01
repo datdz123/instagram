@@ -89,9 +89,9 @@ function remove_extra_image_sizes() {
  * Remove Editor Gutenberg, make Edior Classic
  */
 // Post
-add_filter( 'use_block_editor_for_post', '__return_false', 10 );
-// Post type
-add_filter( 'use_block_editor_for_post_type', '__return_false', 10 );
+// add_filter( 'use_block_editor_for_post', '__return_false', 10 );
+// // Post type
+// add_filter( 'use_block_editor_for_post_type', '__return_false', 10 );
 
 /**
  * Setup Plugin ACF

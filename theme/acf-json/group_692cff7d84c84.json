@@ -1,9 +1,9 @@
 {
-    "key": "group_69296c9ecd323",
-    "title": "[Block] Dowload",
+    "key": "group_692cff7d84c84",
+    "title": "[Block] Faq",
     "fields": [
         {
-            "key": "field_692d054434e3c",
+            "key": "field_692d0580e103a",
             "label": "Ẩn block",
             "name": "hide_block",
             "aria-label": "",
@@ -24,7 +24,7 @@
             "ui": 1
         },
         {
-            "key": "field_69296c9fc3a70",
+            "key": "field_692cff7da0cfb",
             "label": "Tiêu đề",
             "name": "title",
             "aria-label": "",
@@ -45,11 +45,11 @@
             "append": ""
         },
         {
-            "key": "field_69296cb8c3a71",
+            "key": "field_692cff94a0cfc",
             "label": "Mô tả",
             "name": "description",
             "aria-label": "",
-            "type": "text",
+            "type": "textarea",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -61,14 +61,14 @@
             "default_value": "",
             "maxlength": "",
             "allow_in_bindings": 0,
+            "rows": "",
             "placeholder": "",
-            "prepend": "",
-            "append": ""
+            "new_lines": ""
         },
         {
-            "key": "field_69296ccac3a72",
-            "label": "Danh sách nội dung",
-            "name": "list_content",
+            "key": "field_692cffa9a0cfd",
+            "label": "Danh sách faq",
+            "name": "list_faq",
             "aria-label": "",
             "type": "repeater",
             "instructions": "",
@@ -79,43 +79,16 @@
                 "class": "",
                 "id": ""
             },
-            "layout": "block",
+            "layout": "table",
             "pagination": 0,
             "min": 0,
             "max": 0,
             "collapsed": "",
-            "button_label": "Thêm nội dung",
+            "button_label": "list_faq",
             "rows_per_page": 20,
             "sub_fields": [
                 {
-                    "key": "field_69296cddc3a73",
-                    "label": "Hình ảnh",
-                    "name": "img",
-                    "aria-label": "",
-                    "type": "image",
-                    "instructions": "",
-                    "required": 0,
-                    "conditional_logic": 0,
-                    "wrapper": {
-                        "width": "20",
-                        "class": "",
-                        "id": ""
-                    },
-                    "return_format": "id",
-                    "library": "all",
-                    "min_width": "",
-                    "min_height": "",
-                    "min_size": "",
-                    "max_width": "",
-                    "max_height": "",
-                    "max_size": "",
-                    "mime_types": "",
-                    "allow_in_bindings": 0,
-                    "preview_size": "medium",
-                    "parent_repeater": "field_69296ccac3a72"
-                },
-                {
-                    "key": "field_69296ce7c3a74",
+                    "key": "field_692cffc1a0cfe",
                     "label": "Tiêu đề",
                     "name": "title",
                     "aria-label": "",
@@ -124,7 +97,7 @@
                     "required": 0,
                     "conditional_logic": 0,
                     "wrapper": {
-                        "width": "40",
+                        "width": "50",
                         "class": "",
                         "id": ""
                     },
@@ -134,19 +107,19 @@
                     "placeholder": "",
                     "prepend": "",
                     "append": "",
-                    "parent_repeater": "field_69296ccac3a72"
+                    "parent_repeater": "field_692cffa9a0cfd"
                 },
                 {
-                    "key": "field_69296cf3c3a75",
-                    "label": "Mô tả",
-                    "name": "description",
+                    "key": "field_692cffc9a0cff",
+                    "label": "Nội dung",
+                    "name": "content",
                     "aria-label": "",
                     "type": "textarea",
                     "instructions": "",
                     "required": 0,
                     "conditional_logic": 0,
                     "wrapper": {
-                        "width": "40",
+                        "width": "50",
                         "class": "",
                         "id": ""
                     },
@@ -156,7 +129,7 @@
                     "rows": "",
                     "placeholder": "",
                     "new_lines": "",
-                    "parent_repeater": "field_69296ccac3a72"
+                    "parent_repeater": "field_692cffa9a0cfd"
                 }
             ]
         }
@@ -166,7 +139,7 @@
             {
                 "param": "block",
                 "operator": "==",
-                "value": "acf\/block-download"
+                "value": "acf\/block-faq"
             }
         ]
     ],
@@ -180,5 +153,5 @@
     "description": "",
     "show_in_rest": 0,
     "display_title": "",
-    "modified": 1764558169
+    "modified": 1764558225
 }

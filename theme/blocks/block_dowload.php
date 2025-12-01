@@ -1,33 +1,48 @@
+<?php
+$anchor = '';
+$class_name = '';
+if (!empty($block['anchor'])) {
+    $anchor = 'id="' . esc_attr($block['anchor']) . '" ';
+}
+
+if (!empty($block['className'])) {
+    $class_name .= ' ' . $block['className'];
+}
+?>
+
+<?php if (!empty($block['data']['preview_image_help']) && !empty($is_preview)): ?>
+    <img src="<?php echo esc_url($block['data']['preview_image_help']); ?>" style="width:100%;height:auto;" />
+    <?php return; ?>
+<?php endif; ?>
+
+<?php
+$hideBlock = get_field('hide_block');
+if (!$hideBlock):
+?>
+<div <?php echo esc_attr($anchor); ?> class="<?php echo esc_attr($class_name); ?>">
 <section class="section-instruction">
-    <h2 class="section-instruction__title">How to download Instagram Reels?</h2>
-    <p class="section-instruction__text">Check out the three simple steps to utilize this Instagram Reels downloader. It's designed to save both time and effort.</p>
+    <?php if(get_field('title')) : ?>
+    <h2 class="section-instruction__title"><?php the_field('title'); ?></h2>
+    <?php endif; ?>
+    <?php if(get_field('description')) : ?>
+    <p class="section-instruction__text"><?php the_field('description'); ?></p>
+    <?php endif; ?>
     <ul class="section-instruction__list">
-        <li>
-            <picture>
-                <source type="image/webp" srcset="/images/instruction/copy.webp"><img src="/images/instruction/copy.png" loading="lazy" alt="Copy the URL" width="312" height="198">
-            </picture>
-            <div>
-                <h3>Copy the URL</h3>
-                <p>Open Instagram site or app. Open the page with Reels and copy the URL of the page.</p>
-            </div>
-        </li>
-        <li>
-            <picture>
-                <source type="image/webp" srcset="/images/instruction/paste.webp"><img src="/images/instruction/paste.png" loading="lazy" alt="Paste the link" width="312" height="198">
-            </picture>
-            <div>
-                <h3>Paste the link</h3>
-                <p>Paste the link to the input line on the Instagram Reels downloader page. Remember to have the FastDl web page already opened.</p>
-            </div>
-        </li>
-        <li>
-            <picture>
-                <source type="image/webp" srcset="/images/instruction/download.webp"><img src="/images/instruction/download.png" loading="lazy" alt="Download" width="312" height="198">
-            </picture>
-            <div>
-                <h3>Download</h3>
-                <p>Click the Download button to save the Reels to your device.</p>
-            </div>
-        </li>
+        <?php if(have_row('list_content')):?>
+            <?php while(have_rows('list_content')): the_row();?>
+                <li>
+                    <picture>
+                        <source type="image/webp" srcset="<?php echo wp_get_attachment_image_url(get_sub_field('img'), 'full'); ?>"><img src="<?php echo wp_get_attachment_image_url(get_sub_field('img'), 'full'); ?>" loading="lazy" alt="<?php the_sub_field('title'); ?>" width="312" height="198">
+                    </picture>
+                    <div>
+                        <h3><?php the_sub_field('title'); ?></h3>
+                        <p><?php the_sub_field('description'); ?></p>
+                    </div>
+                </li>
+            <?php endwhile;?>
+        <?php endif;?>
+        
     </ul>
 </section>
+</div>
+<?php endif; ?>

@@ -94,25 +94,7 @@ function my_acf_init_block_types()
 				)
 			)
 		);
-		acf_register_block_type(
-			array(
-				'name' => 'block_benefit',
-				'title' => ('[Block] Benefit'),
-				'description' => ('Block benefit for home page'),
-				'render_template' => 'blocks/block_benefit.php',
-				'keywords' => array('block_benefit', 'benefit'),
-			'api_version' => 3,
-			'acf_block_version' => 3,
-			'example' => array(
-				'attributes' => array(
-					'mode' => 'preview',
-					'data' => array(
-						'preview_image_help' => get_stylesheet_directory_uri() . '/assets/preview/block_benefit.png',
-					)
-				)	
-			)
-			)
-					);
+	
 		acf_register_block_type(
 			array(
 				'name' => 'block_feature',
@@ -120,37 +102,37 @@ function my_acf_init_block_types()
 				'description' => ('Block feature for home page'),
 				'render_template' => 'blocks/block_feature.php',
 				'keywords' => array('block_feature', 'feature'),
-			'api_version' => 3,
-			'acf_block_version' => 3,
-			'example' => array(
-				'attributes' => array(
-					'mode' => 'preview',
-					'data' => array(
-						'preview_image_help' => get_stylesheet_directory_uri() . '/assets/preview/block_feature.png',
+				'api_version' => 3,
+				'acf_block_version' => 3,
+				'example' => array(
+					'attributes' => array(
+						'mode' => 'preview',
+						'data' => array(
+							'preview_image_help' => get_stylesheet_directory_uri() . '/assets/preview/block_feature.png',
+						)
 					)
 				)
 			)
-		)
-					);
-					acf_register_block_type(
+		);
+		acf_register_block_type(
 			array(
 				'name' => 'block_extension',
 				'title' => ('[Block] Extension'),
 				'description' => ('Block extension for home page'),
 				'render_template' => 'blocks/block_extension.php',
 				'keywords' => array('block_extension', 'extension'),
-		'api_version' => 3,
-		'acf_block_version' => 3,
-		'example' => array(
-			'attributes' => array(
-				'mode' => 'preview',
-				'data' => array(
-					'preview_image_help' => get_stylesheet_directory_uri() . '/assets/preview/block_extension.png',
+				'api_version' => 3,
+				'acf_block_version' => 3,
+				'example' => array(
+					'attributes' => array(
+						'mode' => 'preview',
+						'data' => array(
+							'preview_image_help' => get_stylesheet_directory_uri() . '/assets/preview/block_extension.png',
+						)
+					)
 				)
 			)
-		)
-				)
-				);
+		);
 		acf_register_block_type(
 			array(
 				'name' => 'block_faq',
@@ -158,17 +140,17 @@ function my_acf_init_block_types()
 				'description' => ('Block faq for home page'),
 				'render_template' => 'blocks/block_faq.php',
 				'keywords' => array('block_faq', 'faq'),
-			'api_version' => 3,
-			'acf_block_version' => 3,
-			'example' => array(
-				'attributes' => array(
-					'mode' => 'preview',
-					'data' => array(
-						'preview_image_help' => get_stylesheet_directory_uri() . '/assets/preview/block_faq.png',
+				'api_version' => 3,
+				'acf_block_version' => 3,
+				'example' => array(
+					'attributes' => array(
+						'mode' => 'preview',
+						'data' => array(
+							'preview_image_help' => get_stylesheet_directory_uri() . '/assets/preview/block_faq.png',
+						)
 					)
 				)
-			)
-		),
+			),
 		);
 	}
 }

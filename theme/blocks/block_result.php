@@ -1,11 +1,41 @@
-<section class="section-text">
-    <div class="section-text__card">
-        <picture>
-            <source type="image/webp" srcset="/images/text/card_index.webp"><img src="/images/text/card_index.png" alt="Download Instagram Carousels" width="328" height="250">
-        </picture>
-        <div class="section-text__content">
-            <h2>Download Instagram Carousels</h2>
-            <p>For all Instagram users, the term "Instagram carousel" is well known, and it's widely used on this social media platform. This post with multiple photos or videos, which can be viewed by swiping or clicking left, was developed to catch the attention while scrolling down on a page. Now, there is no need to wonder if one can download multiple Instagram photos from a carousel post. We made it possible for you. Try our Instagram downloader and save images from Instagram and mixed content containing photos AND videos.</p>
-        </div>
+<?php
+$anchor = '';
+$class_name = '';
+if (!empty($block['anchor'])) {
+    $anchor = 'id="' . esc_attr($block['anchor']) . '" ';
+}
+
+if (!empty($block['className'])) {
+    $class_name .= ' ' . $block['className'];
+}
+?>
+<?php
+if (!empty($block['data']['preview_image_help']) && !empty($is_preview)): ?>
+    <img src="<?php echo esc_url($block['data']['preview_image_help']); ?>" style="width:100%;height:auto;" />
+    <?php return; ?>
+<?php endif; ?>
+
+<?php
+$hideBlock = get_field('hide_block');
+if (!$hideBlock):
+?>
+    <div <?php echo esc_attr($anchor); ?> class="<?php echo esc_attr($class_name); ?>">
+        <section class="section-text">
+            <div class="section-text__card">
+                <?php if (get_field('img')) : ?>
+                    <picture>
+                        <source type="image/webp" srcset="<?php echo wp_get_attachment_image_url(get_field('img'), 'full'); ?>"><img src="<?php echo wp_get_attachment_image_url(get_field('img'), 'full'); ?>" alt="Download Instagram Carousels" width="328" height="250">
+                    </picture>
+                <?php endif; ?>
+                <div class="section-text__content">
+                    <?php if (get_field('title')) : ?>
+                        <h2><?php the_field('title'); ?></h2>
+                    <?php endif; ?>
+                    <?php if (get_field('content')) : ?>
+                        <p><?php the_field('content'); ?></p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </section>
     </div>
-</section>
+<?php endif; ?>

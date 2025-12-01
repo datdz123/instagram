@@ -1,9 +1,9 @@
 {
-    "key": "group_69296c9ecd323",
-    "title": "[Block] Dowload",
+    "key": "group_692cf767ba9af",
+    "title": "[Block] Benefit Home",
     "fields": [
         {
-            "key": "field_692d054434e3c",
+            "key": "field_692d052857acd",
             "label": "Ẩn block",
             "name": "hide_block",
             "aria-label": "",
@@ -24,7 +24,7 @@
             "ui": 1
         },
         {
-            "key": "field_69296c9fc3a70",
+            "key": "field_692cf7684708d",
             "label": "Tiêu đề",
             "name": "title",
             "aria-label": "",
@@ -45,11 +45,11 @@
             "append": ""
         },
         {
-            "key": "field_69296cb8c3a71",
+            "key": "field_692cf77e4708e",
             "label": "Mô tả",
             "name": "description",
             "aria-label": "",
-            "type": "text",
+            "type": "textarea",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -61,14 +61,14 @@
             "default_value": "",
             "maxlength": "",
             "allow_in_bindings": 0,
+            "rows": "",
             "placeholder": "",
-            "prepend": "",
-            "append": ""
+            "new_lines": ""
         },
         {
-            "key": "field_69296ccac3a72",
-            "label": "Danh sách nội dung",
-            "name": "list_content",
+            "key": "field_692cf8c54708f",
+            "label": "Danh sách lợi ích",
+            "name": "list_benefit",
             "aria-label": "",
             "type": "repeater",
             "instructions": "",
@@ -84,13 +84,13 @@
             "min": 0,
             "max": 0,
             "collapsed": "",
-            "button_label": "Thêm nội dung",
+            "button_label": "Thêm lợi ích",
             "rows_per_page": 20,
             "sub_fields": [
                 {
-                    "key": "field_69296cddc3a73",
-                    "label": "Hình ảnh",
-                    "name": "img",
+                    "key": "field_692cf8d447090",
+                    "label": "Icon",
+                    "name": "icon",
                     "aria-label": "",
                     "type": "image",
                     "instructions": "",
@@ -112,10 +112,10 @@
                     "mime_types": "",
                     "allow_in_bindings": 0,
                     "preview_size": "medium",
-                    "parent_repeater": "field_69296ccac3a72"
+                    "parent_repeater": "field_692cf8c54708f"
                 },
                 {
-                    "key": "field_69296ce7c3a74",
+                    "key": "field_692cf8ea47091",
                     "label": "Tiêu đề",
                     "name": "title",
                     "aria-label": "",
@@ -134,12 +134,12 @@
                     "placeholder": "",
                     "prepend": "",
                     "append": "",
-                    "parent_repeater": "field_69296ccac3a72"
+                    "parent_repeater": "field_692cf8c54708f"
                 },
                 {
-                    "key": "field_69296cf3c3a75",
-                    "label": "Mô tả",
-                    "name": "description",
+                    "key": "field_692cf8f347092",
+                    "label": "Nội dung",
+                    "name": "content",
                     "aria-label": "",
                     "type": "textarea",
                     "instructions": "",
@@ -156,7 +156,7 @@
                     "rows": "",
                     "placeholder": "",
                     "new_lines": "",
-                    "parent_repeater": "field_69296ccac3a72"
+                    "parent_repeater": "field_692cf8c54708f"
                 }
             ]
         }
@@ -166,7 +166,7 @@
             {
                 "param": "block",
                 "operator": "==",
-                "value": "acf\/block-download"
+                "value": "acf\/block-benefit-home"
             }
         ]
     ],
@@ -180,5 +180,5 @@
     "description": "",
     "show_in_rest": 0,
     "display_title": "",
-    "modified": 1764558169
+    "modified": 1764560787
 }
