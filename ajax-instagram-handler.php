@@ -1,9 +1,9 @@
 <?php
-// AJAX handler for Instagram API requests
+// AJAX handler for Instagram API requests (RapidAPI - instagram120)
 header('Content-Type: application/json');
 
 define('INSTAGRAM_API_KEY', 'b1f91030admsh48c1538e13f45cep183f95jsn26463edb3469');
-define('INSTAGRAM_API_HOST', 'instagram-api68.p.rapidapi.com');
+define('INSTAGRAM_API_HOST', 'instagram120.p.rapidapi.com');
 
 function build_instagram_error($defaultMessage, $httpCode, $responseBody) {
     $message = $defaultMessage;
@@ -29,9 +29,18 @@ function build_instagram_error($defaultMessage, $httpCode, $responseBody) {
     return $message;
 }
 
-function request_instagram_api($path, $defaultErrorMessage) {
+/**
+ * Gửi request POST JSON tới RapidAPI
+ *
+ * @param string $path   Đường dẫn endpoint, ví dụ: '/api/instagram/userInfo'
+ * @param array  $body   Payload JSON (sẽ được json_encode)
+ * @param string $defaultErrorMessage  Thông báo mặc định khi có lỗi
+ */
+function request_instagram_api($path, array $body, $defaultErrorMessage) {
     $curl = curl_init();
-    
+
+    $jsonBody = json_encode($body);
+
     $curlOptions = [
         CURLOPT_URL => "https://" . INSTAGRAM_API_HOST . $path,
         CURLOPT_RETURNTRANSFER => true,
@@ -39,10 +48,12 @@ function request_instagram_api($path, $defaultErrorMessage) {
         CURLOPT_MAXREDIRS => 10,
         CURLOPT_TIMEOUT => 30,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => "GET",
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => $jsonBody,
         CURLOPT_HTTPHEADER => [
             "x-rapidapi-host: " . INSTAGRAM_API_HOST,
-            "x-rapidapi-key: " . INSTAGRAM_API_KEY
+            "x-rapidapi-key: " . INSTAGRAM_API_KEY,
+            "Content-Type: application/json"
         ],
     ];
     
@@ -77,45 +88,93 @@ function request_instagram_api($path, $defaultErrorMessage) {
     error_log('[Instagram API] Response: ' . substr($response, 0, 500));
     
     if ($http_code !== 200) {
-        return [
+        $builtError = build_instagram_error($defaultErrorMessage, $http_code, $response);
+
+        $errorPayload = [
             'success' => false,
-            'error' => build_instagram_error($defaultErrorMessage, $http_code, $response)
+            'error'   => $builtError,
+            'httpCode'=> $http_code,
         ];
+
+        // Trong môi trường local, trả thêm raw response để tiện debug
+        if (instagram_is_local_env()) {
+            $errorPayload['raw'] = substr($response, 0, 1000);
+        }
+
+        return $errorPayload;
     }
     
     if (!$data) {
-        return [
+        $errorPayload = [
             'success' => false,
-            'error' => 'Invalid response from Instagram API'
+            'error'   => 'Invalid response from Instagram API',
         ];
+
+        if (instagram_is_local_env()) {
+            $errorPayload['raw'] = substr($response, 0, 1000);
+        }
+
+        return $errorPayload;
     }
     
-    // Check if API returned an error status
-    if (isset($data['status']) && !in_array(strtolower($data['status']), ['ok', 'success'], true)) {
-        $errorMsg = $data['message'] ?? $data['error'] ?? $defaultErrorMessage;
-        return [
-            'success' => false,
-            'error' => $errorMsg
-        ];
-    }
-    
+    // API mới có thể không dùng field "status", nên chỉ check basic thôi
     return [
         'success' => true,
-        'data' => $data
+        'data' => $data,
     ];
 }
 
+/**
+ * Lấy thông tin user (avatar, stats, ...)
+ * Endpoint: POST https://instagram120.p.rapidapi.com/api/instagram/userInfo
+ * Body: { "username": "..." }
+ */
 function get_instagram_user_info($username) {
-    $encodedUsername = urlencode($username);
-    return request_instagram_api("/api/user/info?username={$encodedUsername}", 'Failed to fetch user data');
+    $username = trim($username);
+    if ($username === '') {
+        return [
+            'success' => false,
+            'error'   => 'Username is required',
+        ];
+    }
+
+    return request_instagram_api('/api/instagram/userInfo', [
+        'username' => $username,
+    ], 'Failed to fetch user data');
 }
 
-function get_instagram_post_detail($post_url) {
-    $encodedCode = urlencode($post_url);
-    return request_instagram_api("/api/post/detail?code={$encodedCode}", 'Failed to fetch post data');
+/**
+ * Lấy chi tiết post (1 media) theo shortcode
+ * Endpoint: POST https://instagram120.p.rapidapi.com/api/instagram/mediaByShortcode
+ * Body: { "shortcode": "..." }
+ */
+function get_instagram_post_detail($shortcode) {
+    $shortcode = trim($shortcode);
+    if ($shortcode === '') {
+        return [
+            'success' => false,
+            'error'   => 'Shortcode is required',
+        ];
+    }
+
+    return request_instagram_api('/api/instagram/mediaByShortcode', [
+        'shortcode' => $shortcode,
+    ], 'Failed to fetch post data');
 }
 
-function get_instagram_tab_content($username, $contentType) {
+/**
+ * Lấy dữ liệu cho các tab: posts, stories, highlights, reels
+ * Theo docs API mới: truyền username + maxId (phân trang, tạm thời để rỗng)
+ *
+ * Endpoint ví dụ:
+ *  - /api/instagram/posts
+ *  - /api/instagram/stories
+ *  - /api/instagram/highlights
+ *  - /api/instagram/reels
+ *
+ * Body: { "username": "...", "maxId": "" }
+ */
+function get_instagram_tab_content($username, $contentType, $maxId = '') {
     $username = trim($username);
     if ($username === '') {
         return [
@@ -126,10 +185,10 @@ function get_instagram_tab_content($username, $contentType) {
 
     $contentType = strtolower($contentType);
     $endpointMap = [
-        'posts' => '/api/user/posts?username=',
-        'stories' => '/api/user/stories?username=',
-        'highlights' => '/api/user/highlights?username=',
-        'reels' => '/api/user/reels?username=',
+        'posts'      => '/api/instagram/posts',
+        'stories'    => '/api/instagram/stories',
+        'highlights' => '/api/instagram/highlights',
+        'reels'      => '/api/instagram/reels',
     ];
 
     if (!isset($endpointMap[$contentType])) {
@@ -139,11 +198,13 @@ function get_instagram_tab_content($username, $contentType) {
         ];
     }
 
-    $encodedUsername = urlencode($username);
-    $path = $endpointMap[$contentType] . $encodedUsername;
+    $path = $endpointMap[$contentType];
     $defaultMessage = 'Failed to fetch ' . $contentType . ' data';
 
-    return request_instagram_api($path, $defaultMessage);
+    return request_instagram_api($path, [
+        'username' => $username,
+        'maxId'    => (string) $maxId,
+    ], $defaultMessage);
 }
 
 function parse_instagram_url($url) {
@@ -202,9 +263,31 @@ function parse_instagram_url($url) {
     return ['type' => 'profile', 'identifier' => $username];
 }
 
+function instagram_is_local_env() {
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    return (strpos($host, '.local') !== false) || (strpos($host, 'localhost') !== false);
+}
+
 // Main handler
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $input = json_decode(file_get_contents('php://input'), true);
+    $rawInput = file_get_contents('php://input');
+    $input = json_decode($rawInput, true);
+
+    if (instagram_is_local_env()) {
+        error_log('[Instagram API] Incoming payload: ' . $rawInput);
+    }
+
+    // Tab content request (posts / stories / highlights / reels)
+    if (isset($input['contentType'], $input['username']) && !isset($input['url'])) {
+        if (instagram_is_local_env()) {
+            error_log(sprintf('[Instagram API] Tab request: contentType=%s, username=%s, maxId=%s', $input['contentType'], $input['username'], $input['maxId'] ?? ''));
+        }
+
+        $maxId = isset($input['maxId']) ? (string) $input['maxId'] : '';
+        $result = get_instagram_tab_content($input['username'], $input['contentType'], $maxId);
+        echo json_encode($result);
+        exit;
+    }
     
     if (!isset($input['url']) || empty($input['url'])) {
         echo json_encode([
@@ -216,6 +299,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $url = $input['url'];
     $parsed = parse_instagram_url($url);
+
+    if (instagram_is_local_env()) {
+        error_log('[Instagram API] Parsed URL result: ' . var_export($parsed, true));
+    }
     
     if (!$parsed) {
         echo json_encode([
@@ -224,13 +311,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         exit;
     }
-    
+
     if ($parsed['type'] === 'profile') {
         $result = get_instagram_user_info($parsed['identifier']);
+
+        // Chuẩn hoá cấu trúc dữ liệu để phía JS luôn thấy field "user"
+        if (!empty($result['success']) && isset($result['data']) && !isset($result['data']['user'])) {
+            $result['data'] = [
+                'user' => $result['data'],
+            ];
+        }
     } else {
         $result = get_instagram_post_detail($parsed['identifier']);
+
+        // Chuẩn hoá cấu trúc dữ liệu để phía JS luôn thấy field "media"
+        if (!empty($result['success']) && isset($result['data']) && !isset($result['data']['media'])) {
+            $result['data'] = [
+                'media' => $result['data'],
+            ];
+        }
     }
-    
+
     echo json_encode($result);
 } else {
     echo json_encode([

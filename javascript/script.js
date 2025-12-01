@@ -74,7 +74,24 @@ document.addEventListener('DOMContentLoaded', () => {
         isPrivate: false,
         posts: [],
         sections: {},
+        pagination: {}, // lưu maxId cho từng tab nếu cần
     };
+
+    function isRawInputFormatValid(value) {
+        const trimmed = value.trim();
+
+        // Empty
+        if (!trimmed) {
+            return false;
+        }
+
+        // Không cho phép khoảng trắng hoặc dấu phẩy
+        if (/[\s,]/.test(trimmed)) {
+            return false;
+        }
+
+        return true;
+    }
 
     function normalizeInstagramInput(value) {
         const trimmed = value.trim();
@@ -125,8 +142,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle search button
     window.handleSearchButtonClick = async function() {
+        // 1) Validate raw input trước khi chuẩn hoá URL
+        if (!isRawInputFormatValid(currentQuery)) {
+            console.warn('Invalid input format:', currentQuery);
+            showError('Link format is incorrect');
+            return;
+        }
+
         const normalizedQuery = normalizeInstagramInput(currentQuery);
         if (!normalizedQuery) {
+            showError('Link format is incorrect');
             return;
         }
 
@@ -140,7 +165,9 @@ document.addEventListener('DOMContentLoaded', () => {
         searchButton.disabled = true;
 
         try {
-            const response = await fetch('/wp-content/themes/gnws/ajax-instagram-handler.php', {
+            console.log('Sending request to ajax-instagram-handler.php with URL:', normalizedQuery);
+
+            const response = await fetch('/wp-content/themes/instagram/ajax-instagram-handler.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -148,13 +175,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ url: normalizedQuery })
             });
 
-            const result = await response.json();
+            console.log('Handler HTTP status:', response.status);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Handler HTTP error response:', errorText);
+                showError('An error occurred while processing your request. Please check console for details.');
+                return;
+            }
+
+            let result;
+            try {
+                result = await response.json();
+            } catch (jsonError) {
+                console.error('Failed to parse JSON from handler:', jsonError);
+                showError('An error occurred while processing your request. Please check console for details.');
+                return;
+            }
             
             console.log('API Response:', result);
 
             if (result.success) {
                 displayResult(result.data);
             } else {
+                console.error('Instagram handler returned error:', {
+                    error: result.error,
+                    httpCode: result.httpCode,
+                    raw: result.raw,
+                });
                 showError(result.error || 'Link format is incorrect');
             }
         } catch (error) {
@@ -203,12 +251,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!searchResultContainer) return;
         
         searchResultContainer.innerHTML = `
-            <div class="error-message fallback-popup fallback-popup--extension">
-                <p class="error-message__text" style="display: none;">${message}</p>
-                <div class="fallback-popup__text-container">
-                    <p class="fallback-popup__text">${message} 😕 We couldn't download this content.</p>
+            <section class="search-result">
+                <!----><!----><!---->
+                <div class="error-message fallback-popup fallback-popup--extension">
+                    <p class="error-message__text" style="display: none;">${message}</p>
+                    <div class="fallback-popup__text-container">
+                        <p class="fallback-popup__text">${message} 😕 We couldn't download this content.<br> 👉 Try our partner — SaveFrom Helper can handle it with no problem!</p>
+                    </div>
+                    <button class="fallback-popup__btn" type="button">
+                        <span class="fallback-popup__btn-text">Install the extension</span>
+                    </button>
                 </div>
-            </div>
+            </section>
         `;
         searchResultContainer.style.display = 'block';
     }
@@ -233,15 +287,47 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayProfileResult(data) {
         if (!searchResultContainer) return;
 
-        const user = data.user || data;
-        const username = user.username || '';
-        const fullName = user.full_name || user.fullName || '';
-        const profilePic = user.profile_pic_url || user.profilePicUrl || '';
-        const postsCount = user.media_count || user.edge_owner_to_timeline_media?.count || 0;
-        const followersCount = user.follower_count || user.edge_followed_by?.count || 0;
-        const followingCount = user.following_count || user.edge_follow?.count || 0;
-        const posts = user.posts || [];
-        const isPrivate = Boolean(user.is_private);
+        // API instagram120: một số response có dạng { user: { result: [ { user: {...} } ] } }
+        // Chuẩn hoá: cố gắng luôn lấy ra object "user" cuối cùng.
+        const topUserBlock = data.user || data;
+        const fromResultArray =
+            Array.isArray(topUserBlock.result) && topUserBlock.result.length > 0
+                ? topUserBlock.result[0].user || topUserBlock.result[0]
+                : null;
+
+        const user = fromResultArray || topUserBlock.user || topUserBlock;
+
+        const username = user.username || user.user?.username || '';
+        const fullName = user.full_name || user.fullName || user.user?.full_name || '';
+        const profilePic =
+            user.profile_pic_url ||
+            user.profilePicUrl ||
+            user.profile_pic_url_hd ||
+            user.user?.profile_pic_url ||
+            '';
+
+        const postsCount =
+            user.media_count ||
+            user.edge_owner_to_timeline_media?.count ||
+            user.posts_count ||
+            0;
+
+        const followersCount =
+            user.follower_count ||
+            user.edge_followed_by?.count ||
+            user.followers ||
+            0;
+
+        const followingCount =
+            user.following_count ||
+            user.edge_follow?.count ||
+            user.following ||
+            0;
+
+        // Một số API trả posts trong field riêng, một số trong user
+        const posts = data.posts || user.posts || [];
+
+        const isPrivate = Boolean(user.is_private || user.is_private_account);
 
         profileViewState.username = username;
         profileViewState.profileUrl = `https://www.instagram.com/${username}`;
@@ -354,7 +440,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        fetch('/wp-content/themes/gnws/ajax-instagram-handler.php', {
+        const currentMaxId = profileViewState.pagination[tabKey] || '';
+
+        console.log('Fetching profile tab data:', {
+            tabKey,
+            username: profileViewState.username,
+            maxId: currentMaxId,
+        });
+
+        fetch('/wp-content/themes/instagram/ajax-instagram-handler.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -362,15 +456,31 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({
                 contentType: tabKey,
                 username: profileViewState.username,
+                maxId: currentMaxId,
             }),
         })
-            .then((response) => response.json())
+            .then(async (response) => {
+                console.log(`Tab "${tabKey}" handler HTTP status:`, response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error(`Tab "${tabKey}" handler HTTP error:`, errorText);
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                return response.json();
+            })
             .then((result) => {
                 if (!tabContent || tabContent.getAttribute('data-active-tab') !== tabKey) {
                     return;
                 }
 
                 if (result.success) {
+                    // Lưu lại maxId nếu API trả về để phân trang (nếu có)
+                    if (result.data && typeof result.data.next_max_id !== 'undefined') {
+                        profileViewState.pagination[tabKey] = result.data.next_max_id;
+                    }
+
                     profileViewState.sections[tabKey] = result.data;
                     tabContent.innerHTML = renderTabData(tabKey, result.data);
                 } else {
