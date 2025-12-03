@@ -6,7 +6,6 @@ img {
   padding: 0 24px;
 }
 .login h1 a {
-  background-image: none, url(images/giniwebseo.svg);
   background-size: contain;
   width: 100%;
   margin: 0;

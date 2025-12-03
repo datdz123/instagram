@@ -102,9 +102,9 @@ module.exports = {
 				 * scale. If you are adapting an existing design and you need
 				 * to set specific colors throughout, you can do so here. In
 				 * your `./theme/functions.php file, you will need to replace
-				 * `prose-neutral` with `prose-gnws`.
+				 * `prose-neutral` with `prose-instagram`.
 				 */
-				gnws: {
+				instagram: {
 					css: {
 						'--tw-prose-body': theme('colors.foreground'),
 						'--tw-prose-headings': theme('colors.foreground'),

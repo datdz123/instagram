@@ -1,9 +1,68 @@
 <?php
 // AJAX handler for Instagram API requests (RapidAPI - instagram120)
+
+// Load WordPress FIRST - this is critical for ACF to work
+// Path: themes/instagram/ -> themes/ -> wp-content/ -> root/
+$wpLoadPath = dirname(__DIR__, 4) . '/wp-load.php';
+
+if (!file_exists($wpLoadPath)) {
+    // Try alternative path using DOCUMENT_ROOT
+    $wpLoadPath = $_SERVER['DOCUMENT_ROOT'] . '/wp-load.php';
+}
+
+if (!file_exists($wpLoadPath)) {
+    // Try going up directories manually
+    $wpLoadPath = __DIR__ . '/../../../../wp-load.php';
+}
+
+if (file_exists($wpLoadPath)) {
+    require_once $wpLoadPath;
+} else {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => false,
+        'error'   => 'WordPress could not be loaded. wp-load.php not found at: ' . $wpLoadPath,
+    ]);
+    exit;
+}
+
+// Set JSON header after WordPress loads
 header('Content-Type: application/json');
 
-define('INSTAGRAM_API_KEY', 'b1f91030admsh48c1538e13f45cep183f95jsn26463edb3469');
-define('INSTAGRAM_API_HOST', 'instagram120.p.rapidapi.com');
+// Include image proxy functions
+require_once __DIR__ . '/image-proxy.php';
+
+/**
+ * Load Instagram API credentials from the ACF options page (api_key, api_host).
+ * Falls back to environment variables or hard-coded defaults if needed.
+ *
+ * IMPORTANT: Không được die() ở đây, vì file này là AJAX endpoint, luôn
+ * phải trả JSON cho phía JS; thay vào đó chỉ log warning và dùng fallback.
+ */
+
+// Đảm bảo ACF đã sẵn sàng
+if (!function_exists('get_field')) {
+    echo json_encode([
+        'success' => false,
+        'error'   => 'ACF is not available. Please ensure WordPress is loaded before calling this endpoint.',
+    ]);
+    exit;
+}
+
+// Lấy thông tin từ Options page (API)
+$instagramApiKey  = trim((string) get_field('api_key', 'option'));
+$instagramApiHost = trim((string) get_field('api_host', 'option'));
+
+if ($instagramApiKey === '' || $instagramApiHost === '') {
+    echo json_encode([
+        'success' => false,
+        'error'   => 'API key/host is missing. Please fill both fields in Options › API.',
+    ]);
+    exit;
+}
+
+define('INSTAGRAM_API_KEY', $instagramApiKey);
+define('INSTAGRAM_API_HOST', $instagramApiHost);
 
 function build_instagram_error($defaultMessage, $httpCode, $responseBody) {
     $message = $defaultMessage;
@@ -118,6 +177,9 @@ function request_instagram_api($path, array $body, $defaultErrorMessage) {
     }
     
     // API mới có thể không dùng field "status", nên chỉ check basic thôi
+    // Proxy all image URLs in the response - download về images folder
+    $data = proxy_all_image_urls($data);
+    
     return [
         'success' => true,
         'data' => $data,
@@ -160,6 +222,28 @@ function get_instagram_post_detail($shortcode) {
     return request_instagram_api('/api/instagram/mediaByShortcode', [
         'shortcode' => $shortcode,
     ], 'Failed to fetch post data');
+}
+
+/**
+ * Lấy stories từ highlight ID
+ * Endpoint: POST https://instagram120.p.rapidapi.com/api/instagram/highlightStories
+ * Body: { "username": "...", "highlightId": "..." }
+ */
+function get_instagram_highlight_stories($username, $highlightId) {
+    $username = trim($username);
+    $highlightId = trim($highlightId);
+    
+    if ($username === '' || $highlightId === '') {
+        return [
+            'success' => false,
+            'error' => 'Username and highlightId are required'
+        ];
+    }
+
+    return request_instagram_api('/api/instagram/highlightStories', [
+        'username' => $username,
+        'highlightId' => $highlightId,
+    ], 'Failed to fetch highlight stories');
 }
 
 /**
@@ -277,6 +361,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         error_log('[Instagram API] Incoming payload: ' . $rawInput);
     }
 
+    // Highlight stories request
+    if (isset($input['highlightId'], $input['username']) && !isset($input['url']) && !isset($input['contentType'])) {
+        if (instagram_is_local_env()) {
+            error_log(sprintf('[Instagram API] Highlight stories request: highlightId=%s, username=%s', $input['highlightId'], $input['username']));
+        }
+
+        $result = get_instagram_highlight_stories($input['username'], $input['highlightId']);
+        
+        // Proxy all image URLs in highlight stories
+        if (!empty($result['success']) && isset($result['data'])) {
+            $result['data'] = proxy_all_image_urls($result['data']);
+        }
+        
+        echo json_encode($result);
+        exit;
+    }
+
     // Tab content request (posts / stories / highlights / reels)
     if (isset($input['contentType'], $input['username']) && !isset($input['url'])) {
         if (instagram_is_local_env()) {
@@ -285,6 +386,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $maxId = isset($input['maxId']) ? (string) $input['maxId'] : '';
         $result = get_instagram_tab_content($input['username'], $input['contentType'], $maxId);
+        
+        // Proxy all image URLs in tab content - download về images folder
+        if (!empty($result['success']) && isset($result['data'])) {
+            $result['data'] = proxy_all_image_urls($result['data']);
+        }
+        
         echo json_encode($result);
         exit;
     }
@@ -321,6 +428,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'user' => $result['data'],
             ];
         }
+        
+        // Proxy all image URLs in profile data - download về images folder
+        if (!empty($result['success']) && isset($result['data'])) {
+            $result['data'] = proxy_all_image_urls($result['data']);
+        }
     } else {
         $result = get_instagram_post_detail($parsed['identifier']);
 
@@ -329,6 +441,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $result['data'] = [
                 'media' => $result['data'],
             ];
+        }
+        
+        // Proxy all image URLs in post data - download về images folder
+        if (!empty($result['success']) && isset($result['data'])) {
+            $result['data'] = proxy_all_image_urls($result['data']);
         }
     }
 

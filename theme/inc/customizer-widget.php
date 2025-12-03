@@ -1,12 +1,12 @@
 <?php
-// class gnws_sidebar_widget extends WP_Widget
+// class instagram_sidebar_widget extends WP_Widget
 // {
 //     function __construct()
 //     {
 
 //         parent::__construct(
 
-//             'gnws_sidebar_widget',
+//             'instagram_sidebar_widget',
 
 //             'Widget',
 
@@ -45,10 +45,10 @@
 
 //     }
 // }
-// add_action('widgets_init', 'create_gnws_sidebar_widget');
+// add_action('widgets_init', 'create_instagram_sidebar_widget');
 
-// function create_gnws_sidebar_widget()
+// function create_instagram_sidebar_widget()
 // {
 
-//     register_widget('gnws_sidebar_widget');
+//     register_widget('instagram_sidebar_widget');
 // }

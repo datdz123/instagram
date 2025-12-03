@@ -54,7 +54,7 @@ function my_acf_init_block_types()
 				'name' => 'block_download',
 				'title' => ('[Block] Download'),
 				'description' => ('Block download for home page'),
-				'render_template' => 'blocks/block_download.php',
+				'render_template' => 'blocks/block_dowload.php',
 				'keywords' => array('block_download', 'download'),
 				'supports' => array(
 					'anchor' => true,
@@ -65,7 +65,7 @@ function my_acf_init_block_types()
 					'attributes' => array(
 						'mode' => 'preview',
 						'data' => array(
-							'preview_image_help' => get_stylesheet_directory_uri() . '/assets/preview/block_download.png',
+							'preview_image_help' => get_stylesheet_directory_uri() . '/assets/preview/block_dowload.png',
 						)
 					)
 				)
@@ -88,7 +88,7 @@ function my_acf_init_block_types()
 					'attributes' => array(
 						'mode' => 'preview',
 						'data' => array(
-							'preview_image_help' => get_stylesheet_directory_uri() . '/assets/preview/block_benefit_home.png',
+							'preview_image_help' => get_stylesheet_directory_uri() . '/assets/preview/block_benefit.png',
 						)
 					)
 				)

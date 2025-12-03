@@ -3,7 +3,7 @@
 /**
  * Functions which customizer into WordPress
  *
- * @package gnws
+ * @package instagram
  */
 
 
@@ -131,17 +131,17 @@ function cysp_acf_json_load_point( $paths ) {
  * Style Dashboard
  */
 //Css Admin
-if ( ! function_exists( 'gnws_css_admin' ) ) :
-	add_action( 'admin_head', 'gnws_css_admin' );
-	add_action( 'admin_enqueue_scripts', 'gnws_css_admin' );
-	function gnws_css_admin() {
+if ( ! function_exists( 'instagram_css_admin' ) ) :
+	add_action( 'admin_head', 'instagram_css_admin' );
+	add_action( 'admin_enqueue_scripts', 'instagram_css_admin' );
+	function instagram_css_admin() {
 		wp_enqueue_style( 'admin_css', get_template_directory_uri() . '/admin/admin.css' );
 	}
 endif;
 //CSS Login
-if ( ! function_exists( 'gnws_css_admin_login' ) ) :
-	add_action( 'login_enqueue_scripts', 'gnws_css_admin_login' );
-	function gnws_css_admin_login() {
+if ( ! function_exists( 'instagram_css_admin_login' ) ) :
+	add_action( 'login_enqueue_scripts', 'instagram_css_admin_login' );
+	function instagram_css_admin_login() {
 		wp_enqueue_style( 'admin_login_css', get_template_directory_uri() . '/admin/login.css' );
 	}
 endif;
@@ -159,24 +159,24 @@ function my_custom_login_url( $url ) {
 /**
  * Automatically set the image Title, Alt-Text, Caption & Description upload (image tab)
  */
-add_action( 'add_attachment', 'gnws_set_image_meta_image_upload' );
-function gnws_set_image_meta_image_upload( $post_ID ) {
+add_action( 'add_attachment', 'instagram_set_image_meta_image_upload' );
+function instagram_set_image_meta_image_upload( $post_ID ) {
 	if ( wp_attachment_is_image( $post_ID ) ) {
-		$gnws_image_title = get_post( $post_ID )->post_title;
-		$gnws_image_title = preg_replace(
+		$instagram_image_title = get_post( $post_ID )->post_title;
+		$instagram_image_title = preg_replace(
 			'%\s*[-_\s]+\s*%',
 			' ',
-			$gnws_image_title
+			$instagram_image_title
 		);
-		$gnws_image_title = ucwords( strtolower( $gnws_image_title ) );
-		$gnws_my_image_meta = array(
+		$instagram_image_title = ucwords( strtolower( $instagram_image_title ) );
+		$instagram_my_image_meta = array(
 			'ID' => $post_ID,
-			'post_title' => $gnws_image_title,
+			'post_title' => $instagram_image_title,
 			'post_excerpt' => '',
 			'post_content' => '',
 		);
-		update_post_meta( $post_ID, '_wp_attachment_image_alt', $gnws_image_title );
-		wp_update_post( $gnws_my_image_meta );
+		update_post_meta( $post_ID, '_wp_attachment_image_alt', $instagram_image_title );
+		wp_update_post( $instagram_my_image_meta );
 	}
 }
 
@@ -184,10 +184,10 @@ function gnws_set_image_meta_image_upload( $post_ID ) {
 /**
  * Remove Logo / Version / Help
  */
-function gnws_remove_version() {
+function instagram_remove_version() {
 	return '';
 }
-add_filter( 'the_generator', 'gnws_remove_version' );
+add_filter( 'the_generator', 'instagram_remove_version' );
 function change_footer_admin() {
 	return ' ';
 }
@@ -200,9 +200,9 @@ remove_action( 'wp_head', 'wp_generator' );
 // Remove version from rss
 add_filter( 'the_generator', '__return_empty_string' );
 
-add_action( 'admin_head', 'gnws_remove_help_tabs' );
+add_action( 'admin_head', 'instagram_remove_help_tabs' );
 
-function gnws_remove_help_tabs() {
+function instagram_remove_help_tabs() {
   $screen = get_current_screen();
   if ( $screen ) {
     $screen->remove_help_tabs();
@@ -396,3 +396,30 @@ add_filter( 'wp_get_attachment_image_attributes', 'add_lazy_loading_to_images' )
 //   wp_safe_redirect( add_query_arg($args, admin_url('admin.php')) );
 //   exit;
 // });
+
+
+add_action('admin_init', function() {
+    if (!is_admin()) return;
+    
+    // Chỉ xử lý GET requests
+    $method = isset($_SERVER['REQUEST_METHOD']) ? strtoupper(sanitize_text_field(wp_unslash($_SERVER['REQUEST_METHOD']))) : 'GET';
+    if ($method !== 'GET') return;
+    
+    $page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
+    if ($page !== 'api') return;
+
+    // Nếu đã là lang=all thì không redirect nữa
+    $lang = isset($_GET['lang']) ? sanitize_text_field(wp_unslash($_GET['lang'])) : '';
+    if ($lang === 'all') return;
+
+    // Giữ nguyên các query args khác, chỉ thay đổi lang=all
+    $args = [];
+    foreach ($_GET as $k => $v) {
+        $args[$k] = is_array($v) ? array_map('sanitize_text_field', wp_unslash($v)) : sanitize_text_field(wp_unslash($v));
+    }
+    $args['lang'] = 'all';
+
+    // Redirect về admin.php với lang=all
+    wp_safe_redirect(add_query_arg($args, admin_url('admin.php')));
+    exit;
+});

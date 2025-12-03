@@ -13,8 +13,8 @@ if (!empty($block['className'])) {
  * Helper: ưu tiên field trong option page, fallback về field của block hiện tại.
  * Cần bọc trong function_exists vì file block có thể được include nhiều lần.
  */
-if (!function_exists('gnws_block_option_field')) {
-  function gnws_block_option_field($field, $is_sub = false) {
+if (!function_exists('instagram_block_option_field')) {
+  function instagram_block_option_field($field, $is_sub = false) {
     $option_value = $is_sub ? get_sub_field($field, 'option') : get_field($field, 'option');
     if ($option_value !== null && $option_value !== '' && $option_value !== false) {
       return $option_value;
@@ -31,13 +31,13 @@ if (!function_exists('gnws_block_option_field')) {
 <?php endif; ?>
 
 <?php
-$hideBlock = gnws_block_option_field('hide_block');
+$hideBlock = instagram_block_option_field('hide_block');
 if (!$hideBlock):
   $option_has_title = have_rows('list_title', 'option');
   $option_has_content = have_rows('list_content', 'option');
-  $btn_title = gnws_block_option_field('title_btn');
-  $btn_link = gnws_block_option_field('link');
-  $img = gnws_block_option_field('img');
+  $btn_title = instagram_block_option_field('title_btn');
+  $btn_link = instagram_block_option_field('link');
+  $img = instagram_block_option_field('img');
 ?>
   <div <?php echo esc_attr($anchor); ?> class="<?php echo esc_attr($class_name); ?>">
     <section class="browser-extension">

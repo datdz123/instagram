@@ -8,7 +8,7 @@
  *
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
  *
- * @package gnws
+ * @package instagram
  */
 
 get_header();

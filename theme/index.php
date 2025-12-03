@@ -9,7 +9,7 @@
  *
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
  *
- * @package gnws
+ * @package instagram
  */
 
 get_header();
@@ -36,7 +36,7 @@ get_header();
 			}
 
 			// Previous/next page navigation.
-			gnws_the_posts_navigation();
+			instagram_the_posts_navigation();
 
 		} else {
 

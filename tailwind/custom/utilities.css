@@ -589,3 +589,9 @@ pre.wp-block-code {
 
     background: linear-gradient(315deg, #60a5fa, #2563eb) !important;
 }
+.button--filled.button__download {
+    width:100%;
+}
+.tags__item--image {
+    background-image: var(--open-svg-url) !important;
+}

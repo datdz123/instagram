@@ -1,4 +1,4 @@
-gnws
+instagram
 ====
 
 A custom theme based on \_tw

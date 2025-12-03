@@ -4,7 +4,7 @@
  *
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/#single-post
  *
- * @package gnws
+ * @package instagram
  */
 
 get_header();
@@ -36,7 +36,7 @@ get_header();
 							<div class="news-detail__meta">
 								<span><?php echo esc_html( get_the_date( 'd/m/Y' ) ); ?></span>
 								<span class="news-detail__dot" aria-hidden="true"></span>
-								<span><?php printf( esc_html__( '%s phút đọc', 'gnws' ), $readingTime ); ?></span>
+								<span><?php printf( esc_html__( '%s phút đọc', 'instagram' ), $readingTime ); ?></span>
 							</div>
 						</div>
 
@@ -54,25 +54,25 @@ get_header();
 
 						<aside class="news-detail__sidebar">
 							<div class="news-detail__card">
-								<h3><?php esc_html_e( 'Thông tin bài viết', 'gnws' ); ?></h3>
+								<h3><?php esc_html_e( 'Thông tin bài viết', 'instagram' ); ?></h3>
 								<ul>
 									<li>
-										<span><?php esc_html_e( 'Tác giả', 'gnws' ); ?></span>
+										<span><?php esc_html_e( 'Tác giả', 'instagram' ); ?></span>
 										<strong><?php the_author(); ?></strong>
 									</li>
 									<li>
-										<span><?php esc_html_e( 'Ngày đăng', 'gnws' ); ?></span>
+										<span><?php esc_html_e( 'Ngày đăng', 'instagram' ); ?></span>
 										<strong><?php echo esc_html( get_the_date( 'd/m/Y' ) ); ?></strong>
 									</li>
 									<li>
-										<span><?php esc_html_e( 'Thời gian đọc', 'gnws' ); ?></span>
-										<strong><?php printf( esc_html__( '%s phút', 'gnws' ), $readingTime ); ?></strong>
+										<span><?php esc_html_e( 'Thời gian đọc', 'instagram' ); ?></span>
+										<strong><?php printf( esc_html__( '%s phút', 'instagram' ), $readingTime ); ?></strong>
 									</li>
 								</ul>
 							</div>
 
 							<div class="news-detail__card news-detail__share">
-								<h3><?php esc_html_e( 'Chia sẻ bài viết', 'gnws' ); ?></h3>
+								<h3><?php esc_html_e( 'Chia sẻ bài viết', 'instagram' ); ?></h3>
 								<div class="news-detail__share-links">
 									<a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo rawurlencode( get_permalink() ); ?>" target="_blank" rel="noopener noreferrer">Facebook</a>
 									<a href="https://twitter.com/intent/tweet?url=<?php echo rawurlencode( get_permalink() ); ?>&text=<?php echo rawurlencode( get_the_title() ); ?>" target="_blank" rel="noopener noreferrer">Twitter</a>
@@ -106,9 +106,9 @@ get_header();
 						?>
 						<div class="news-detail__related">
 							<div class="news-detail__related-head">
-								<h3><?php esc_html_e( 'Bài viết liên quan', 'gnws' ); ?></h3>
+								<h3><?php esc_html_e( 'Bài viết liên quan', 'instagram' ); ?></h3>
 								<a class="news-detail__related-all" href="<?php echo esc_url( $blog_page ); ?>">
-									<?php esc_html_e( 'Xem tất cả', 'gnws' ); ?>
+									<?php esc_html_e( 'Xem tất cả', 'instagram' ); ?>
 								</a>
 							</div>
 
@@ -142,8 +142,8 @@ get_header();
 						<?php
 						the_post_navigation(
 							array(
-								'next_text' => '<span class="news-detail__nav-label">' . __( 'Bài tiếp theo', 'gnws' ) . '</span><span class="news-detail__nav-title">%title</span>',
-								'prev_text' => '<span class="news-detail__nav-label">' . __( 'Bài trước', 'gnws' ) . '</span><span class="news-detail__nav-title">%title</span>',
+								'next_text' => '<span class="news-detail__nav-label">' . __( 'Bài tiếp theo', 'instagram' ) . '</span><span class="news-detail__nav-title">%title</span>',
+								'prev_text' => '<span class="news-detail__nav-label">' . __( 'Bài trước', 'instagram' ) . '</span><span class="news-detail__nav-title">%title</span>',
 							)
 						);
 						?>

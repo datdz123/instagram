@@ -3,7 +3,7 @@
 /**
  * Functions which enhance the theme by hooking into WordPress
  *
- * @package gnws
+ * @package instagram
  */
 
 /**
@@ -12,7 +12,7 @@
  * @param array $classes Classes for the body element.
  * @return array
  */
-function gnws_body_classes( $classes ) {
+function instagram_body_classes( $classes ) {
 	// Adds a class of hfeed to non-singular pages.
 	if ( ! is_singular() ) {
 		$classes[] = 'hfeed';
@@ -25,17 +25,17 @@ function gnws_body_classes( $classes ) {
 
 	return $classes;
 }
-add_filter( 'body_class', 'gnws_body_classes' );
+add_filter( 'body_class', 'instagram_body_classes' );
 
 /**
  * Add a pingback url auto-discovery header for single posts, pages, or attachments.
  */
-function gnws_pingback_header() {
+function instagram_pingback_header() {
 	if ( is_singular() && pings_open() ) {
 		printf( '<link rel="pingback" href="%s">', esc_url( get_bloginfo( 'pingback_url' ) ) );
 	}
 }
-add_action( 'wp_head', 'gnws_pingback_header' );
+add_action( 'wp_head', 'instagram_pingback_header' );
 
 if ( ! function_exists( 'wp_body_open' ) ) :
 	/**
@@ -96,11 +96,11 @@ function svg( $name, $width = false, $height = false, $class = '' ) {
 // 	return '';
 // }
 
-if ( ! function_exists( 'gnws_post_thumbnail' ) ) :
+if ( ! function_exists( 'instagram_post_thumbnail' ) ) :
 	/**
 	 * Returns the post thumbnail URL or a placeholder URL if not available.
 	 */
-	function gnws_post_thumbnail() {
+	function instagram_post_thumbnail() {
 		if ( post_password_required() || is_attachment() || ! has_post_thumbnail() ) {
 			return get_stylesheet_directory_uri() . '/assets/svg/placeholder.svg';
 		} else {
@@ -110,14 +110,14 @@ if ( ! function_exists( 'gnws_post_thumbnail' ) ) :
 endif;
 
 
-if ( ! function_exists( 'gnws_post_thumbnail_full' ) ) :
+if ( ! function_exists( 'instagram_post_thumbnail_full' ) ) :
 	/**
 	 * Displays an optional post thumbnail.
 	 *
 	 * Wraps the post thumbnail in an anchor element on index views, or a div
 	 * element when on single views.
 	 */
-	function gnws_post_thumbnail_full() {
+	function instagram_post_thumbnail_full() {
 		if ( post_password_required() || is_attachment() || ! has_post_thumbnail() ) {
 			return get_stylesheet_directory_uri() . '/assets/svg/placeholder.svg';
 		} else {
@@ -129,7 +129,7 @@ endif;
 /**
  * Displays pagination style by number page
  */
-function gnws_pagination() {
+function instagram_pagination() {
 
 	if ( is_singular() )
 		return;
@@ -158,7 +158,7 @@ function gnws_pagination() {
 		$links[] = $paged + 1;
 	}
 
-	echo '<div class="gnws-pagination"><ul>' . "\n";
+	echo '<div class="instagram-pagination"><ul>' . "\n";
 
 	/** Previous Post Link */
 	if ( get_previous_posts_link() )

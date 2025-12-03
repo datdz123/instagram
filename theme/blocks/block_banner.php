@@ -1,6 +1,7 @@
 <?php
 $anchor = '';
 $class_name = '';
+
 if (!empty($block['anchor'])) {
     $anchor = 'id="' . esc_attr($block['anchor']) . '" ';
 }

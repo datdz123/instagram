@@ -4,7 +4,7 @@
  *
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
  *
- * @package gnws
+ * @package instagram
  */
 
 get_header();
@@ -22,7 +22,7 @@ get_header();
 			?>
 
 			<header class="news-archive__hero">
-				<p class="news-archive__eyebrow"><?php esc_html_e( 'Chuyên mục', 'gnws' ); ?></p>
+				<p class="news-archive__eyebrow"><?php esc_html_e( 'Chuyên mục', 'instagram' ); ?></p>
 				<h1 class="news-archive__title"><?php echo esc_html( $term_name ); ?></h1>
 				<?php if ( $term_desc ) : ?>
 					<div class="news-archive__description the_content">
@@ -32,7 +32,7 @@ get_header();
 				<span class="news-archive__count">
 					<?php
 					printf(
-						esc_html__( '%s bài viết', 'gnws' ),
+						esc_html__( '%s bài viết', 'instagram' ),
 						number_format_i18n( $post_count )
 					);
 					?>
@@ -77,7 +77,7 @@ get_header();
 							</p>
 
 							<a class="news-archive__card-link" href="<?php the_permalink(); ?>">
-								<?php esc_html_e( 'Đọc tiếp', 'gnws' ); ?>
+								<?php esc_html_e( 'Đọc tiếp', 'instagram' ); ?>
 							</a>
 						</div>
 					</article>
@@ -91,8 +91,8 @@ get_header();
 				the_posts_pagination(
 					array(
 						'mid_size'  => 2,
-						'prev_text' => __( '← Trước', 'gnws' ),
-						'next_text' => __( 'Sau →', 'gnws' ),
+						'prev_text' => __( '← Trước', 'instagram' ),
+						'next_text' => __( 'Sau →', 'instagram' ),
 					)
 				);
 				?>
@@ -101,8 +101,8 @@ get_header();
 		<?php else : ?>
 
 			<div class="news-archive__empty">
-				<h2><?php esc_html_e( 'Chưa có bài viết', 'gnws' ); ?></h2>
-				<p><?php esc_html_e( 'Quay lại sau để xem thêm nội dung mới.', 'gnws' ); ?></p>
+				<h2><?php esc_html_e( 'Chưa có bài viết', 'instagram' ); ?></h2>
+				<p><?php esc_html_e( 'Quay lại sau để xem thêm nội dung mới.', 'instagram' ); ?></p>
 			</div>
 
 		<?php endif; ?>

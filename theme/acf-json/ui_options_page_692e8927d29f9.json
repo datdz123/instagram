@@ -1,0 +1,23 @@
+{
+    "key": "ui_options_page_692e8927d29f9",
+    "title": "API",
+    "active": true,
+    "menu_order": 0,
+    "page_title": "API",
+    "menu_slug": "api",
+    "parent_slug": "cai-dat-site",
+    "advanced_configuration": false,
+    "icon_url": "",
+    "menu_title": "",
+    "position": null,
+    "redirect": false,
+    "description": "",
+    "menu_icon": [],
+    "update_button": "Update",
+    "updated_message": "Options Updated",
+    "capability": "edit_posts",
+    "data_storage": "options",
+    "post_id": "",
+    "autoload": false,
+    "modified": 1764657447
+}
